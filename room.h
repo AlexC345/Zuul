@@ -15,6 +15,8 @@ class room{
 		void addExit(char*, room*);
 		void addItem(item*);
 		void print();
+		bool validDirection(char* direction);
+		room* enterDirection(char* direction);
 	private:
 		char* name;
 		char* description;

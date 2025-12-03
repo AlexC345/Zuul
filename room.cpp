@@ -36,6 +36,23 @@ void room::addItem(item* i){
 	items.push_back(i);
 }
 
+bool room::validDirection(char* direction){
+	for (int i=0; i<exits.size(); i++){
+		if (strcmp(direction, exits[i]) == 0){
+			return true;
+		}
+	}
+	return false;
+}
+
+room* room::enterDirection(char* direction){
+	for (int i=0; i<exits.size(); i++){
+		if (strcmp(direction, exits[i]) == 0){
+			return exitRooms[i];
+		}
+	}
+}
+
 void room::print(){
 	cout << "You are in the " << name << ". " << description << endl;
 	if (items.size() > 0){

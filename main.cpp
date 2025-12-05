@@ -4,8 +4,9 @@
 #include "room.h"
 #include "item.h"
 using namespace std;
-
+//include stuff
 int main(){
+	//command terms and running bool
 	bool running = true;
 
 	char move[] = "MOVE";
@@ -14,7 +15,7 @@ int main(){
 	char drop[] = "DROP";
 	char quit[] = "QUIT";
 	char command[1000];
-
+	//input variables
 	char moveDir[5];
 
 	int itemPickupIndex;
@@ -113,53 +114,55 @@ int main(){
 	physicsRoom->addExit("South", nappingRoom);
 	
 	//add items
-	mainHall->addItem(bronzeKey);
-	mainHall->addItem(silverKey);
-	mainHall->addItem(goldKey);
-	mainHall->addItem(platinumKey);
-	mainHall->addItem(diamondKey);
+	jail->addItem(bronzeKey);
+	artRoom->addItem(silverKey);
+	mathRoom->addItem(goldKey);
+	counselorOffice->addItem(platinumKey);
+	gym->addItem(diamondKey);
 	
 	//set starting room
 	currentRoom = entrance;
 
-	while(running){
+	while(running){//main while loop
 		//winning condition: put all 5 keys in the physics room
 		if (physicsRoom->checkWinCondition()){
 			cout << "All the 5 keys insert into the massive door, and it slowly opens, making way for the light. Congratulations. You win!" << endl;
 			running = false;
+			strcpy(command, quit);
 		}
-
-		currentRoom->print();
-		cout << "What command do you want to do? (MOVE, COLLECT, INVENTORY, DROP): ";
-		cin >> command;
-		cin.ignore();
-		command[9] = '\0';
-		if (strcmp(command, move) == 0){
+		if (running){//get player command
+			currentRoom->print();
+			cout << "What command do you want to do? (MOVE, COLLECT, INVENTORY, DROP): ";
+			cin >> command;
+			cin.ignore();
+			command[9] = '\0';
+		}
+		if (strcmp(command, move) == 0){//if you input MOVE
 			cout << "Which direction do you want to move in?: ";
 			cin >> moveDir;
-			cin.ignore();
-			if (currentRoom->validDirection(moveDir)){
-				currentRoom = currentRoom->enterDirection(moveDir);
+			cin.ignore();//get move direction
+			if (currentRoom->validDirection(moveDir)){//make sure its a valid direction
+				currentRoom = currentRoom->enterDirection(moveDir);//set new current room to room in entered direction
 			}
 			else{
 				cout << "Invalid direction." << endl;
 			}
 		}
-		if (strcmp(command, collect) == 0){
-			if (currentRoom->validCollect()){
-				cout << "Enter item index you want to pick up: ";
+		if (strcmp(command, collect) == 0){//if you input COLLECT
+			if (currentRoom->validCollect()){//if there are items in the current room:
+				cout << "Enter item index you want to pick up: ";//get input item index to pick up (the room prints the item indexes)
 				cin >> itemPickupIndex;
-				inventory.push_back(currentRoom->removeItem(itemPickupIndex));
+				inventory.push_back(currentRoom->removeItem(itemPickupIndex));//add the item to inventory whilst removing it from the room
 				cout << "Added item to inventory." << endl;
 			}
 			else{
 				cout << "No items in this room!" << endl;
 			}
 		}
-		if (strcmp(command, inventoryCommand) == 0){
-			if (inventory.size() > 0){
+		if (strcmp(command, inventoryCommand) == 0){//if you input INVENTORY
+			if (inventory.size() > 0){//if you have at least 1 thing in your inventory:
 				cout << "INVENTORY: " << endl;
-				for (int i=0; i<inventory.size(); i++){
+				for (int i=0; i<inventory.size(); i++){//print out everything in your inventory
 					cout << inventory[i]->getName() << endl;
 				}
 			}
@@ -167,28 +170,33 @@ int main(){
 				cout << "Yeah your broke on items." << endl;
 			}
 		}
-		if (strcmp(command, drop) == 0){
-			if (inventory.size() == 0){
+		if (strcmp(command, drop) == 0){//if you input DROP
+			if (inventory.size() == 0){//if you have nothing in your inventory:
 				cout << "You got nothing to drop." << endl;
 			}
 			else{
-				for (int i=0; i<inventory.size(); i++){
+				for (int i=0; i<inventory.size(); i++){//print out the inventory and each item's index
 					cout << i << ". " << inventory[i]->getName() << endl;
 				}
-				cout << "Enter item index you want to drop: ";
+				cout << "Enter item index you want to drop: ";//get player input on which item they want to drop
 				cin >> itemDropIndex;
-				item* itemDropCopy = inventory[itemDropIndex];
-				inventory.erase(inventory.begin() + itemDropIndex);
-				currentRoom->addItem(itemDropCopy);
+				item* itemDropCopy = inventory[itemDropIndex];//save a copy of the item to drop
+				inventory.erase(inventory.begin() + itemDropIndex);//delete item from inventory
+				currentRoom->addItem(itemDropCopy);//add item to current room
 				cout << "Dropped item in current room." << endl;
 			}
 		}
-		if (strcmp(command, quit) == 0){
-			running = false;
+		if (strcmp(command, quit) == 0){//if you input QUIT
+			running = false;//stop the main loop
 			cout << "Quit." << endl;
 		}
-
-
+	}
+	//prevent memory leaks
+	for (room* r : roomList){
+		delete r;
+	}
+	for (item* i : inventory){
+		delete i;
 	}
 	return 0;
 }

@@ -5,8 +5,10 @@
 #include <vector>
 #include "item.h"
 using namespace std;
+//imports and header guard
 
 class room{
+	//public constructor, destructor, and functions
 	public:
 		room(char*,  char*);
 		~room();
@@ -20,6 +22,7 @@ class room{
 		bool validCollect();
 		item* removeItem(int removeItemIndex);
 		bool checkWinCondition();
+	//private variables and vectors
 	private:
 		char* name;
 		char* description;
@@ -27,4 +30,5 @@ class room{
 		vector<room*> exitRooms;
 		vector<item*> items;
 };
+//header guard end
 #endif

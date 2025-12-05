@@ -10,9 +10,15 @@ int main(){
 
 	char move[] = "MOVE";
 	char collect[] = "COLLECT";
+	char inventoryCommand[] = "INVENTORY";
+	char drop[] = "DROP";
+	char quit[] = "QUIT";
 	char command[1000];
 
 	char moveDir[5];
+
+	int itemPickupIndex;
+	int itemDropIndex;
 
 	vector<room*> roomList;
 	//define items
@@ -69,7 +75,7 @@ int main(){
 
 	mathRoom->addExit("East", mainOffice);
 
-	counselo-rOffice->addExit("North", gym);
+	counselorOffice->addExit("North", gym);
         counselorOffice->addExit("West", mainOffice);
 
 	mainHall->addExit("North", cafeteria);
@@ -107,21 +113,27 @@ int main(){
 	physicsRoom->addExit("South", nappingRoom);
 	
 	//add items
-	entrance->addItem(bronzeKey);
-	entrance->addItem(silverKey);
-	entrance->addItem(goldKey);
-	entrance->addItem(platinumKey);
-	entrance->addItem(diamondKey);
+	mainHall->addItem(bronzeKey);
+	mainHall->addItem(silverKey);
+	mainHall->addItem(goldKey);
+	mainHall->addItem(platinumKey);
+	mainHall->addItem(diamondKey);
 	
 	//set starting room
 	currentRoom = entrance;
 
 	while(running){
+		//winning condition: put all 5 keys in the physics room
+		if (physicsRoom->checkWinCondition()){
+			cout << "All the 5 keys insert into the massive door, and it slowly opens, making way for the light. Congratulations. You win!" << endl;
+			running = false;
+		}
+
 		currentRoom->print();
-		cout << "What command do you want to do? (MOVE, COLLECT): ";
+		cout << "What command do you want to do? (MOVE, COLLECT, INVENTORY, DROP): ";
 		cin >> command;
 		cin.ignore();
-		command[7] = '\0';
+		command[9] = '\0';
 		if (strcmp(command, move) == 0){
 			cout << "Which direction do you want to move in?: ";
 			cin >> moveDir;
@@ -133,10 +145,50 @@ int main(){
 				cout << "Invalid direction." << endl;
 			}
 		}
+		if (strcmp(command, collect) == 0){
+			if (currentRoom->validCollect()){
+				cout << "Enter item index you want to pick up: ";
+				cin >> itemPickupIndex;
+				inventory.push_back(currentRoom->removeItem(itemPickupIndex));
+				cout << "Added item to inventory." << endl;
+			}
+			else{
+				cout << "No items in this room!" << endl;
+			}
+		}
+		if (strcmp(command, inventoryCommand) == 0){
+			if (inventory.size() > 0){
+				cout << "INVENTORY: " << endl;
+				for (int i=0; i<inventory.size(); i++){
+					cout << inventory[i]->getName() << endl;
+				}
+			}
+			else{
+				cout << "Yeah your broke on items." << endl;
+			}
+		}
+		if (strcmp(command, drop) == 0){
+			if (inventory.size() == 0){
+				cout << "You got nothing to drop." << endl;
+			}
+			else{
+				for (int i=0; i<inventory.size(); i++){
+					cout << i << ". " << inventory[i]->getName() << endl;
+				}
+				cout << "Enter item index you want to drop: ";
+				cin >> itemDropIndex;
+				item* itemDropCopy = inventory[itemDropIndex];
+				inventory.erase(inventory.begin() + itemDropIndex);
+				currentRoom->addItem(itemDropCopy);
+				cout << "Dropped item in current room." << endl;
+			}
+		}
+		if (strcmp(command, quit) == 0){
+			running = false;
+			cout << "Quit." << endl;
+		}
 
 
 	}
 	return 0;
 }
-
-

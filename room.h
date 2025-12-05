@@ -17,6 +17,9 @@ class room{
 		void print();
 		bool validDirection(char* direction);
 		room* enterDirection(char* direction);
+		bool validCollect();
+		item* removeItem(int removeItemIndex);
+		bool checkWinCondition();
 	private:
 		char* name;
 		char* description;

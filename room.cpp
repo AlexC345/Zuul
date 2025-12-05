@@ -15,6 +15,13 @@ room::room(char* inputName, char* inputDescription){
 }
 
 room::~room(){
+	for (int i=0; i<items.size(); i++){
+		delete items[i];
+	}
+	for (int i=0; i<exits.size(); i++){
+		delete exits[i];
+		delete exitRooms[i];
+	}
 	delete[] name;
 	delete[] description;
 }
@@ -53,11 +60,26 @@ room* room::enterDirection(char* direction){
 	}
 }
 
+bool room::validCollect(){
+	return (items.size() > 0);
+}
+
+item* room::removeItem(int removeItemIndex){
+	item* copyItem = items[removeItemIndex];
+	items.erase(items.begin() + removeItemIndex);
+	return copyItem;
+}
+
+bool room::checkWinCondition(){
+	return (items.size() >= 5);
+}
+
 void room::print(){
 	cout << "You are in the " << name << ". " << description << endl;
 	if (items.size() > 0){
-		cout << "You see: " << endl;
+	cout << "You see: " << endl;
 		for (int i=0; i<items.size(); i++){
+			cout << i << ". ";
 			items[i]->print();
 		}
 	}
